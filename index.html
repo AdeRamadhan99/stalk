@@ -7,45 +7,41 @@
   <!-- ======================================================== -->
   <!-- 1. KUSTOMISASI TEKS DI TAB BROWSER                       -->
   <!-- ======================================================== -->
-  <!-- Teks di bawah ini yang akan muncul di tab browser pengguna -->
-  <title>Sweetalk | Lab Relation</title>
+  <title>Sweetalk | Relation Lab</title>
   
   <!-- ======================================================== -->
   <!-- 2. KUSTOMISASI LOGO DI TAB BROWSER (FAVICON)             -->
   <!-- ======================================================== -->
-  <!-- Ganti "logo-instansi.png" dengan nama file gambar Anda   -->
-  <!-- yang sudah di-upload ke repository GitHub yang sama      -->
-  <link rel="icon" type="image/png" href="assets/LogoStalk.png">
-  
-  <!-- (Opsional) Icon khusus untuk perangkat Apple (iPhone/iPad) -->
-  <link rel="apple-touch-icon" href="assets/LogoStalk.png">
+  <!-- Pastikan file logo-sweetalk.png sudah di-upload ke GitHub Anda -->
+  <link rel="icon" type="image/png" href="LogoStalk.png">
+  <link rel="apple-touch-icon" href="LogoStalk.png">
 
   <style>
-    /* CSS untuk memastikan iframe menutupi 100% layar tanpa scrollbar ganda */
+    /* Reset margin agar Iframe penuh 100% dan bebas scrollbar */
     body, html { 
       margin: 0; 
       padding: 0; 
       height: 100%; 
       overflow: hidden; 
-      /* Warna latar ini akan terlihat sesaat sebelum form Google termuat */
-      background-color: #ffe4e1; 
+      /* Warna latar merah muda (Rose) agar serasi sebelum iframe muncul */
+      background-color: #fdf2f8; 
     }
     
     iframe { 
       width: 100%; 
       height: 100%; 
       border: none; 
+      display: block;
     }
   </style>
 </head>
 <body>
 
   <!-- ======================================================== -->
-  <!-- 3. MASUKKAN LINK GOOGLE APPS SCRIPT ANDA DI SINI         -->
+  <!-- 3. MASUKKAN LINK GOOGLE APPS SCRIPT (WEB APP) ANDA       -->
   <!-- ======================================================== -->
-  <!-- Ganti URL di dalam atribut src dengan link web app Anda  -->
   <iframe src="https://script.google.com/macros/s/AKfycbwNR5A14KzIK9bB6AXz7aoWrDKNTO6w9En4h2vSsJrDd_3wUbuvi26QR1Tv1AViXDt9wQ/exec"
-          title="Add Data | Sweetalk">
+    title="Aplikasi Sweetalk" allow="fullscreen">
   </iframe>
 
 </body>
