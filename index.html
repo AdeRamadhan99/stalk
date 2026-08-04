@@ -43,6 +43,16 @@
   <iframe src="https://script.google.com/macros/s/AKfycbwNR5A14KzIK9bB6AXz7aoWrDKNTO6w9En4h2vSsJrDd_3wUbuvi26QR1Tv1AViXDt9wQ/exec"
     title="Aplikasi Sweetalk" allow="fullscreen">
   </iframe>
-
+  
+  <!-- TAMBAHKAN SCRIPT PINTAR INI -->
+  <script>
+    // GitHub mendengarkan "teriakan" dari Google Apps Script
+    window.addEventListener('message', function(event) {
+      // Jika pesannya mengandung URL baru, GitHub akan mereload Iframe-nya
+      if (event.data && event.data.url) {
+        document.getElementById('appFrame').src = event.data.url;
+      }
+    });
+  </script>
 </body>
 </html>
