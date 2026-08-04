@@ -48,8 +48,8 @@
   <script>
     // GitHub mendengarkan "teriakan" dari Google Apps Script
     window.addEventListener('message', function(event) {
-      // Jika pesannya mengandung URL baru, GitHub akan mereload Iframe-nya
-      if (event.data && event.data.url) {
+      // Filter ketat: Pastikan pesan memang berisi "url"
+      if (event.data && typeof event.data.url === 'string') {
         document.getElementById('appFrame').src = event.data.url;
       }
     });
