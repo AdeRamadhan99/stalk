@@ -7,38 +7,26 @@
   
   <link rel="icon" type="image/png" href="LogoStalk.png">
   <link rel="apple-touch-icon" href="LogoStalk.png">
-  
-  <!-- Memuat library desain untuk layar login -->
   <script src="https://cdn.tailwindcss.com"></script>
   
   <style>
-    body, html { 
-      margin: 0; 
-      padding: 0; 
-      height: 100%; 
-      overflow: hidden; 
-      background-color: #fdf2f8; 
-    }
-    iframe { 
-      width: 100%; 
-      height: 100%; 
-      border: none; 
-      display: block; 
-    }
+    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #fdf2f8; }
+    iframe { width: 100%; height: 100%; border: none; display: block; }
   </style>
 </head>
 <body>
 
-  <!-- LAYER LOGIN PIN (Menutupi seluruh layar) -->
+  <!-- LAYER LOGIN PIN 6 DIGIT -->
   <div id="loginScreen" class="fixed inset-0 bg-rose-50 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500">
     <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center mx-4 relative border border-rose-100">
       <div class="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
         <span class="text-3xl">💞</span>
       </div>
       <h2 class="text-2xl font-bold text-gray-800 mb-2">Sweetalk Room</h2>
-      <p class="text-sm text-gray-500 mb-6">Masukkan PIN keamanan Anda</p>
+      <p class="text-sm text-gray-500 mb-6">Masukkan 6 Digit PIN Anda</p>
       
-      <input type="password" id="pinInput" placeholder="4 Digit PIN" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-rose-500 outline-none text-center text-xl tracking-widest mb-4 transition-all" maxlength="4">
+      <!-- Ubah maxlength menjadi 6 -->
+      <input type="password" id="pinInput" placeholder="6 Digit PIN" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-rose-500 outline-none text-center text-2xl tracking-widest mb-4 transition-all" maxlength="6">
       
       <button onclick="login()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-md transition-colors">
         Buka Akses
@@ -46,119 +34,95 @@
     </div>
   </div>
 
-  <!-- TOMBOL LOGOUT (Muncul di pojok kanan bawah setelah login) -->
   <button onclick="logout()" class="fixed bottom-4 right-4 z-[9999] bg-white/90 backdrop-blur text-rose-600 px-4 py-2 rounded-full shadow-lg text-sm font-bold border border-rose-200 hover:bg-rose-50 transition-colors hidden" id="btnLogout" title="Kunci Aplikasi">
     Tutup Aplikasi 🔒
   </button>
 
-  <!-- IFRAME APLIKASI UTAMA (Awalnya disembunyikan) -->
   <iframe id="appFrame" title="Aplikasi Sweetalk" allow="fullscreen" class="hidden"></iframe>
   
   <script>
-    // =========================================================================
-    // 1. MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
-    // =========================================================================
     const gasBaseUrl = "https://script.google.com/macros/s/AKfycbwNR5A14KzIK9bB6AXz7aoWrDKNTO6w9En4h2vSsJrDd_3wUbuvi26QR1Tv1AViXDt9wQ/exec";
     
+    // GANTI ARRAY INI AGAR SAMA DENGAN PIN DI CODE.GS ANDA
+    const validPins = ["199898", "199999"]; 
+
     const iframe = document.getElementById('appFrame');
     const loginScreen = document.getElementById('loginScreen');
     const btnLogout = document.getElementById('btnLogout');
     
-    // Membaca PIN dari memori browser (Agar tidak perlu login tiap refresh)
     let savedPin = localStorage.getItem('sweetalk_pin');
 
-    // =========================================================================
-    // 2. FUNGSI MEMUAT APLIKASI
-    // =========================================================================
     function loadApp() {
       const urlParams = new URLSearchParams(window.location.search);
       const currentPage = urlParams.get('page');
       
-      // Menyisipkan parameter PIN ke URL Web App
       let finalUrl = gasBaseUrl + "?pin=" + savedPin;
-      if (currentPage) {
-        finalUrl += "&page=" + currentPage;
-      }
+      if (currentPage) { finalUrl += "&page=" + currentPage; }
       
       iframe.src = finalUrl;
       
-      // Transisi animasi menyembunyikan layar login
       iframe.classList.remove('hidden');
       btnLogout.classList.remove('hidden');
       loginScreen.classList.add('opacity-0');
       setTimeout(() => loginScreen.style.display = 'none', 500);
     }
 
-    // Auto-login jika sesi PIN masih tersimpan di browser
-    if (savedPin) { 
+    if (savedPin && validPins.includes(savedPin)) { 
       loadApp(); 
     }
 
-    // =========================================================================
-    // 3. FUNGSI LOGIN & LOGOUT
-    // =========================================================================
     function login() {
       const pin = document.getElementById('pinInput').value;
-      if (pin.length >= 4) {
-        savedPin = pin;
-        localStorage.setItem('sweetalk_pin', pin); // Simpan PIN ke memori browser
-        loadApp();
-      } else {
-        alert("Masukkan minimal 4 digit PIN!");
+      
+      // 1. Pengecekan jumlah digit
+      if (pin.length !== 6) {
+        alert("Harap masukkan tepat 6 digit PIN!");
+        return;
       }
+      
+      // 2. Pengecekan kecocokan PIN (Validasi Frontend)
+      if (!validPins.includes(pin)) {
+        alert("PIN yang Anda masukkan salah!");
+        document.getElementById('pinInput').value = ''; // Kosongkan form
+        return;
+      }
+
+      // Jika lolos, simpan memori dan buka Iframe
+      savedPin = pin;
+      localStorage.setItem('sweetalk_pin', pin);
+      loadApp();
     }
 
     function logout() {
-      localStorage.removeItem('sweetalk_pin'); // Hapus PIN dari memori browser
-      window.location.href = window.location.pathname; // Refresh halaman bersih
+      localStorage.removeItem('sweetalk_pin');
+      window.location.href = window.location.pathname; 
     }
 
-    // Eksekusi tombol login saat menekan tombol "Enter" di keyboard
     document.getElementById("pinInput").addEventListener("keypress", function(event) {
-      if (event.key === "Enter") { 
-        event.preventDefault(); 
-        login(); 
-      }
+      if (event.key === "Enter") { event.preventDefault(); login(); }
     });
 
-    // =========================================================================
-    // 4. SINKRONISASI NAVIGASI & TOMBOL BACK
-    // =========================================================================
     window.addEventListener('message', function(event) {
       if (event.data && typeof event.data.url === 'string') {
-        
-        // Sisipkan PIN ke tautan baru yang dipanggil dari dalam Iframe
         let newIframeUrl = event.data.url;
-        if(newIframeUrl.includes('?')) {
-          newIframeUrl += "&pin=" + savedPin;
-        } else {
-          newIframeUrl += "?pin=" + savedPin;
-        }
+        newIframeUrl += (newIframeUrl.includes('?') ? "&" : "?") + "pin=" + savedPin;
         iframe.src = newIframeUrl;
 
-        // Memperbarui URL di address bar browser tanpa refresh
         try {
           const gasUrl = new URL(event.data.url);
           const pageValue = gasUrl.searchParams.get('page');
           const newParentUrl = new URL(window.location.href);
           
-          if (pageValue) {
-            newParentUrl.searchParams.set('page', pageValue);
-          } else {
-            newParentUrl.searchParams.delete('page');
-          }
+          if (pageValue) newParentUrl.searchParams.set('page', pageValue);
+          else newParentUrl.searchParams.delete('page');
           
           window.history.pushState({ path: newParentUrl.toString() }, '', newParentUrl.toString());
-        } catch (error) { 
-          console.error("Gagal sinkronisasi URL:", error); 
-        }
+        } catch (error) { console.error("Gagal sinkronisasi URL:", error); }
       }
     });
 
-    // Mengatasi jika pengguna menekan tombol Back atau Forward di HP/Browser
     window.addEventListener('popstate', function() {
-       if(!savedPin) return; // Jika belum login, abaikan
-       
+       if(!savedPin) return; 
        const currentParams = new URLSearchParams(window.location.search);
        const page = currentParams.get('page');
        
