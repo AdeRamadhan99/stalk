@@ -4,6 +4,104 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
+  <title>Sweetalk - Relation Lab</title>
+  <link rel="icon" type="image/png" href="LogoStalk.png">
+  <link rel="apple-touch-icon" href="LogoStalk.png">
+
+  <style>
+    body, html { 
+      margin: 0; 
+      padding: 0; 
+      height: 100%; 
+      overflow: hidden; 
+      background-color: #fdf2f8; 
+    }
+    iframe { 
+      width: 100%; 
+      height: 100%; 
+      border: none; 
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Iframe dikosongkan src-nya karena akan diatur oleh JavaScript di bawah -->
+  <iframe id="appFrame" title="Aplikasi Sweetalk" allow="fullscreen"></iframe>
+  
+  <script>
+    // 1. TENTUKAN URL DASAR GOOGLE APPS SCRIPT ANDA
+    const gasBaseUrl = "https://script.google.com/macros/s/AKfycbwNR5A14KzIK9bB6AXz7aoWrDKNTO6w9En4h2vSsJrDd_3wUbuvi26QR1Tv1AViXDt9wQ/exec";
+    const iframe = document.getElementById('appFrame');
+
+    // =========================================================================
+    // 2. LOGIKA SAAT HALAMAN DIBUKA ATAU DI-REFRESH
+    // =========================================================================
+    // Membaca parameter dari URL browser (contoh: sweetalk.github.io/?page=homepage)
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentPage = urlParams.get('page');
+
+    // Jika ada keterangan halaman (page), arahkan iframe ke sana. Jika tidak, buka rute default
+    if (currentPage) {
+      iframe.src = gasBaseUrl + "?page=" + currentPage;
+    } else {
+      iframe.src = gasBaseUrl;
+    }
+
+    // =========================================================================
+    // 3. LOGIKA SAAT KLIK TOMBOL NAVIGASI DI DALAM APLIKASI
+    // =========================================================================
+    window.addEventListener('message', function(event) {
+      if (event.data && typeof event.data.url === 'string') {
+        
+        // Update isi Iframe dengan URL baru dari pesan
+        iframe.src = event.data.url;
+
+        // Ambil parameter '?page=' dari URL Google Apps Script yang dikirim
+        try {
+          const gasUrl = new URL(event.data.url);
+          const pageValue = gasUrl.searchParams.get('page');
+
+          // Manipulasi URL browser GitHub Anda agar selaras
+          const newParentUrl = new URL(window.location.href);
+          if (pageValue) {
+            newParentUrl.searchParams.set('page', pageValue);
+          } else {
+            newParentUrl.searchParams.delete('page');
+          }
+          
+          // history.pushState mengubah URL di address bar TANPA melakukan refresh halaman!
+          window.history.pushState({ path: newParentUrl.toString() }, '', newParentUrl.toString());
+        } catch (error) {
+          console.error("Gagal sinkronisasi URL:", error);
+        }
+      }
+    });
+
+    // =========================================================================
+    // 4. MENGATASI TOMBOL KEMBALI (BACK) PADA BROWSER / HP
+    // =========================================================================
+    window.addEventListener('popstate', function() {
+       const currentParams = new URLSearchParams(window.location.search);
+       const page = currentParams.get('page');
+       if (page) {
+         iframe.src = gasBaseUrl + "?page=" + page;
+       } else {
+         iframe.src = gasBaseUrl;
+       }
+    });
+  </script>
+</body>
+</html>
+
+
+<!--
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <!-- ======================================================== -->
   <!-- 1. KUSTOMISASI TEKS DI TAB BROWSER                       -->
   <!-- ======================================================== -->
@@ -56,3 +154,4 @@
   </script>
 </body>
 </html>
+-->
